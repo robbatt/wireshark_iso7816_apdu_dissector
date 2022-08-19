@@ -15,6 +15,7 @@ dt:add(0x85, require('apdu_sub_dissectors/fcp_template/proprietary_info/reserved
 dt:add(0x86, require('apdu_sub_dissectors/fcp_template/proprietary_info/maximum_file_size'))
 dt:add(0x87, require('apdu_sub_dissectors/fcp_template/proprietary_info/supported_system_commands'))
 dt:add(0x88, require('apdu_sub_dissectors/fcp_template/proprietary_info/specific_uicc_environmental_conditions'))
+dt:add(0x89, require('apdu_sub_dissectors/fcp_template/proprietary_info/platform_to_platform_CAT_Secured_APDU'))
 
 function p.dissector(buffer, pinfo, tree)
 
