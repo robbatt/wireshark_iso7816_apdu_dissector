@@ -13,6 +13,7 @@ dt:add(0x83, require('apdu_sub_dissectors/fcp_template/proprietary_info/amount_o
 dt:add(0x84, require('apdu_sub_dissectors/fcp_template/proprietary_info/file_details'))
 dt:add(0x85, require('apdu_sub_dissectors/fcp_template/proprietary_info/reserved_file_size'))
 dt:add(0x86, require('apdu_sub_dissectors/fcp_template/proprietary_info/maximum_file_size'))
+dt:add(0x87, require('apdu_sub_dissectors/fcp_template/proprietary_info/supported_system_commands'))
 
 function p.dissector(buffer, pinfo, tree)
 
