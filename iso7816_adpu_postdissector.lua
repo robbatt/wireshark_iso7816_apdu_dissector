@@ -31,6 +31,8 @@ p.fields = pf
 iso7816_apdu_data_f = Field.new('gsm_sim.apdu.data')
 iso7816_apdu_ins_f = Field.new('gsm_sim.apdu.ins')
 iso7816_gsm_sim_le_f = Field.new('gsm_sim.le')
+iso7816_gsm_sim_bin_offset_f = Field.new('gsm_sim.bin_offset')
+iso7816_gsm_sim_record_nr_f = Field.new('gsm_sim.record_nr')
 iso7816_apdu_sw_f = Field.new('gsm_sim.apdu.sw')
 iso7816_gsm_sim_file_id_f = Field.new('gsm_sim.file_id')
 
@@ -50,6 +52,8 @@ function p.dissector(tvb, pinfo, tree)
     local apdu_payload = iso7816_apdu_data_f()
     local ins = f_val(iso7816_apdu_ins_f)
     local le = f_val(iso7816_gsm_sim_le_f)
+    local bin_off = f_val(iso7816_gsm_sim_bin_offset_f)
+    local record_nr = f_val(iso7816_gsm_sim_record_nr_f)
     local sw_f = iso7816_apdu_sw_f()
 
     local offset = 0
@@ -80,6 +84,38 @@ function p.dissector(tvb, pinfo, tree)
         current.instruction = ins
         current.frame_number = pinfo.number
         current.expect_response_length = 0x00
+        _G.conversations[pinfo.number] = current
+
+    elseif ins == 0xb2
+            and previous
+            and le and le == previous.expect_read_record_length
+            and record_nr and record_nr == previous.next_read_record_nr
+    then
+        -- read record after response
+        -- TODO currently works only for one READ RECORD after a GET RESPONSE, and for multiple without interruption through TERMINAL RESPONSE or FETCH proactive
+        print(string.format('frame: %s - found matching read record to previous select (file id: 0x%04x - %s) response', pinfo.number, previous.selected_file, FILE_IDENTIFIERS[previous.selected_file]))
+
+        local current = deepcopy(previous)
+        current.instruction = ins
+        current.frame_number = pinfo.number
+        current.expect_read_record_length = 0x00
+        current.next_read_record_nr = 0x00
+        _G.conversations[pinfo.number] = current
+
+    elseif ins == 0xb0
+            and previous
+            and le and le == previous.expect_read_binary_file_size
+            and bin_off and bin_off == previous.expect_read_binary_offset
+    then
+        -- read binary after response
+        -- TODO currently works only for one READ BINARY after a GET RESPONSE
+        print(string.format('frame: %s - found matching read binary to previous select (file id: 0x%04x - %s) response', pinfo.number, previous.selected_file, FILE_IDENTIFIERS[previous.selected_file]))
+
+        local current = deepcopy(previous)
+        current.instruction = ins
+        current.frame_number = pinfo.number
+        current.expect_read_binary_offset = 0x00
+        current.expect_read_binary_file_size = 0x00
         _G.conversations[pinfo.number] = current
     end
 
