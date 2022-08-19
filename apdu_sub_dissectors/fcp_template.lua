@@ -8,6 +8,7 @@ local dt = DissectorTable.new('iso7816.apdu.fcp', 'ISO7816-APDU fcp template sub
 dt:add(0x82, require('apdu_sub_dissectors/fcp_template/file_descriptor'))
 dt:add(0x83, require('apdu_sub_dissectors/fcp_template/file_identifier'))
 dt:add(0x84, require('apdu_sub_dissectors/fcp_template/df_name_aid'))
+dt:add(0xA5, require('apdu_sub_dissectors/fcp_template/proprietary_info'))
 
 function p.dissector(buffer, pinfo, tree)
 
