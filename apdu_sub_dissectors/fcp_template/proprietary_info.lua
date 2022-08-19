@@ -11,6 +11,7 @@ dt:add(0x81, require('apdu_sub_dissectors/fcp_template/proprietary_info/applicat
 dt:add(0x82, require('apdu_sub_dissectors/fcp_template/proprietary_info/minimum_application_clock_frequency'))
 dt:add(0x83, require('apdu_sub_dissectors/fcp_template/proprietary_info/amount_of_available_memory'))
 dt:add(0x84, require('apdu_sub_dissectors/fcp_template/proprietary_info/file_details'))
+dt:add(0x85, require('apdu_sub_dissectors/fcp_template/proprietary_info/reserved_file_size'))
 
 function p.dissector(buffer, pinfo, tree)
 
