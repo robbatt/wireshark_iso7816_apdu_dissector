@@ -14,6 +14,8 @@ dt:add(0x8C, require('apdu_sub_dissectors/fcp_template/security_attribute_compac
 dt:add(0xAB, require('apdu_sub_dissectors/fcp_template/security_attribute_expanded'))
 dt:add(0x8B, require('apdu_sub_dissectors/fcp_template/security_attribute_referenced_expanded'))
 dt:add(0xC6, require('apdu_sub_dissectors/fcp_template/pin_status'))
+dt:add(0x80, require('apdu_sub_dissectors/fcp_template/file_size'))
+dt:add(0x81, require('apdu_sub_dissectors/fcp_template/file_size_total'))
 
 function p.dissector(buffer, pinfo, tree)
 
