@@ -10,6 +10,7 @@ dt:add(0x80, require('apdu_sub_dissectors/fcp_template/proprietary_info/uicc_cha
 dt:add(0x81, require('apdu_sub_dissectors/fcp_template/proprietary_info/application_power_consumption'))
 dt:add(0x82, require('apdu_sub_dissectors/fcp_template/proprietary_info/minimum_application_clock_frequency'))
 dt:add(0x83, require('apdu_sub_dissectors/fcp_template/proprietary_info/amount_of_available_memory'))
+dt:add(0x84, require('apdu_sub_dissectors/fcp_template/proprietary_info/file_details'))
 
 function p.dissector(buffer, pinfo, tree)
 
