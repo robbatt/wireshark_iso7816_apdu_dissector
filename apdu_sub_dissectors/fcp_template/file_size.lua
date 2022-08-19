@@ -12,6 +12,11 @@ function p.dissector(buffer, pinfo, tree)
     local file_size_length = buffer(1, 1):uint() -- should be >=2
     local file_size = buffer(2, file_size_length):uint()
 
+    if _G.conversations[pinfo.number] then
+        _G.conversations[pinfo.number].expect_read_binary_file_size = file_size -- store this for conversation mapping
+        print(string.format('frame: %s - set expect_read_binary_file_size to: %s', pinfo.number, file_size))
+    end
+
     -- see (TS 102 221) 11.1.1.4.1 - File size '80'
     -- Mandatory, only for EF
 
