@@ -13,6 +13,7 @@ dt:add(0x8A, require('apdu_sub_dissectors/fcp_template/life_cycle_status'))
 dt:add(0x8C, require('apdu_sub_dissectors/fcp_template/security_attribute_compact'))
 dt:add(0xAB, require('apdu_sub_dissectors/fcp_template/security_attribute_expanded'))
 dt:add(0x8B, require('apdu_sub_dissectors/fcp_template/security_attribute_referenced_expanded'))
+dt:add(0xC6, require('apdu_sub_dissectors/fcp_template/pin_status'))
 
 function p.dissector(buffer, pinfo, tree)
 
