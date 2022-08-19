@@ -1,3 +1,5 @@
+require('constants')
+
 -- Step 1 - document as you go. See header above and set_plugin_info().
 local iso7816_adpu_info = {
     version = "1.0.0",
