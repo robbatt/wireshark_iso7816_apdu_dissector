@@ -9,6 +9,7 @@ local dt = DissectorTable.new('iso7816.apdu.fcp.proprietary_info', 'ISO7816-APDU
 dt:add(0x80, require('apdu_sub_dissectors/fcp_template/proprietary_info/uicc_characteristics'))
 dt:add(0x81, require('apdu_sub_dissectors/fcp_template/proprietary_info/application_power_consumption'))
 dt:add(0x82, require('apdu_sub_dissectors/fcp_template/proprietary_info/minimum_application_clock_frequency'))
+dt:add(0x83, require('apdu_sub_dissectors/fcp_template/proprietary_info/amount_of_available_memory'))
 
 function p.dissector(buffer, pinfo, tree)
 
