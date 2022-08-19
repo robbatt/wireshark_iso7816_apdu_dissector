@@ -19,6 +19,9 @@ local p = Proto.new("iso7816.apdu", "ISO 7816 - APDU")
 local dt = DissectorTable.new('iso7816.apdu', 'ISO7816-APDU sub-dissectors', ftypes.UINT8, base.HEX, p)
 dt:add(0x62, require('apdu_sub_dissectors/fcp_template'))
 
+local dt_parsers = DissectorTable.new('iso7816.apdu.file_parsers', 'ISO7816-APDU file parsers', ftypes.UINT8, base.HEX, p)
+dt_parsers:add(0x2fe2, require('apdu_sub_dissectors/file_parsers/iccid'))
+
 -- Step 3 - add some field(s) to Step 2 protocol
 local pf = {
     data = ProtoField.bytes(p.name .. ".data", "Data"),
@@ -137,6 +140,7 @@ function p.dissector(tvb, pinfo, tree)
         if ins == 0xb0 and current and current.selected_file > 0x00 then
             subtree:add(pf.followup_select, buffer, current.selected_file)
             -- parse binary content
+            offset = offset + dissect_file_content(buffer, pinfo, subtree, p, dt_parsers, current.selected_file)
         else
             offset = offset + dissect_remaining_tlvs(buffer, pinfo, subtree, p, dt)
         end

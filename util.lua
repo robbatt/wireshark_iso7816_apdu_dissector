@@ -17,6 +17,17 @@ function dissect_remaining_tlvs(buffer, pinfo, tree, protocol, dissector_table)
     return offset
 end
 
+function dissect_file_content(buffer, pinfo, tree, protocol, dissector_table, file_id)
+    local file_parser = dissector_table:get_dissector(file_id)
+    if file_parser then
+        print(string.format('frame: %s - found a file parser for file: 0x%02x - %s - in dissector: %s', pinfo.number, file_id, FILE_IDENTIFIERS[file_id], protocol.name))
+        return file_parser:call(buffer():tvb(), pinfo, tree)
+    else
+        print(string.format('frame: %s - No file parser found for file: 0x%02x - %s - in dissector: %s', pinfo.number, file_id, FILE_IDENTIFIERS[file_id], protocol.name))
+        return 0
+    end
+end
+
 function deepcopy(o, seen)
     seen = seen or {}
     if o == nil then
