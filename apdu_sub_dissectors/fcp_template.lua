@@ -10,6 +10,9 @@ dt:add(0x83, require('apdu_sub_dissectors/fcp_template/file_identifier'))
 dt:add(0x84, require('apdu_sub_dissectors/fcp_template/df_name_aid'))
 dt:add(0xA5, require('apdu_sub_dissectors/fcp_template/proprietary_info'))
 dt:add(0x8A, require('apdu_sub_dissectors/fcp_template/life_cycle_status'))
+dt:add(0x8C, require('apdu_sub_dissectors/fcp_template/security_attribute_compact'))
+dt:add(0xAB, require('apdu_sub_dissectors/fcp_template/security_attribute_expanded'))
+dt:add(0x8B, require('apdu_sub_dissectors/fcp_template/security_attribute_referenced_expanded'))
 
 function p.dissector(buffer, pinfo, tree)
 
