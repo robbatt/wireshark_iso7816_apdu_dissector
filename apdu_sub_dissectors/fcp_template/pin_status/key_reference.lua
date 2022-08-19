@@ -60,6 +60,7 @@ local KEY_REFERENCE = {
     [0x9d] = 'RFU (Local)',
     [0x9e] = 'RFU (Local)',
 }
+local ENABLED = { ['0'] = 'disabled', ['1'] = 'enabled' }
 local p = Proto.new("iso7816.apdu.pin_status.key_reference", "- Key Reference")
 local pf = {
     section = ProtoField.string(p.name .. ".section", "Section"),
@@ -71,7 +72,7 @@ function p.dissector(buffer, packageInfo, tree)
 
     local key_reference = buffer(2, 1):uint()
     -- optional, add a new level (dropdown) for this section
-    local subtree = tree:add(p, buffer(0, buffer:len()), string.format('- Key Reference: (0x%02x) - %s', key_reference, KEY_REFERENCE[key_reference]))
+    local subtree = tree:add(p, buffer(0, buffer:len()), string.format('- Key Reference: (0x%02x) - %s - %s', key_reference, KEY_REFERENCE[key_reference], ENABLED[packageInfo.private.key_reference_enabled]))
 
     -- see (TS 102 221) 11.1.1.4.6.1 UICC characteristics
     subtree:add(pf.section, buffer(0, 2), string.format('Tag: 0x%02x, Content: %s byte(s)', buffer(0, 1):uint(), buffer(1, 1):uint()))

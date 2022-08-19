@@ -32,7 +32,26 @@ function p.dissector(buffer, pinfo, tree)
     local offset = 4 + do_length
 
     -- this will call the according sub-dissector for each section
-    offset = offset + dissect_remaining_tlvs(buffer(offset):tvb(), pinfo, tree, p, dt)
+    local key_reference_count = 0
+    while offset < length do
+        local tlv_tag = buffer(offset, 1):uint()
+        local tlv_dissector = dt:get_dissector(tlv_tag)
+        local tlv_length = 2 + buffer(offset + 1, 1):uint()
+
+        local consumed_bytes = tlv_length
+        if tlv_dissector then
+
+            -- workaround to pass the state of this entry, which is defined earlier to the according sub-dissector
+            if tlv_tag == 0x83 then -- key reference, enabled info
+                pinfo.private.key_reference_enabled = buffer(4, do_length):bitfield(key_reference_count)
+                key_reference_count = key_reference_count + 1
+            end
+            consumed_bytes = tlv_dissector:call(buffer(offset, tlv_length):tvb(), pinfo, tree)
+        else
+            print(string.format('frame: %s - No tlv-dissector found for tag: 0x%02x in dissector: %s', pinfo.number, tlv_tag, p.name))
+        end
+        offset = offset + consumed_bytes
+    end
 
     return offset -- processed bytes
 end
