@@ -16,7 +16,7 @@ function p.dissector(buffer, pinfo, tree)
 
     if _G.conversations[pinfo.number] then
         _G.conversations[pinfo.number].expect_read_binary_offset = read_offset -- store this for conversation mapping
-        print(string.format('frame: %s - set expect_read_binary_offset to: %s', pinfo.number, read_offset))
+        --print(string.format('frame: %s - set expect_read_binary_offset to: %s', pinfo.number, read_offset))
     end
 
 

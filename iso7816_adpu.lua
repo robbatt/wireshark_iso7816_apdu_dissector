@@ -75,7 +75,7 @@ function p.dissector(tvb, pinfo, tree)
         -- select with response ready
         local sw2 = sw_f.tvb(1, 1):uint() -- expected response length
         local selected_file = f_val(iso7816_gsm_sim_file_id_f)
-        print(string.format('frame: %s - found select (file id: 0x%04x - %s)', pinfo.number, selected_file, FILE_IDENTIFIERS[selected_file]))
+        --print(string.format('frame: %s - found select (file id: 0x%04x - %s)', pinfo.number, selected_file, FILE_IDENTIFIERS[selected_file]))
 
         local conversation = APDU_Conversation:new(pinfo.number, ins)
         -- TODO seems SELECT can also reference 2 files at once, but this field only stores one value (simtrace2_bg95_boot_roam_profile.pcapng - frame:29)
@@ -90,7 +90,7 @@ function p.dissector(tvb, pinfo, tree)
             and previous.expect_response_length == le
     then
         -- response
-        print(string.format('frame: %s - found matching response to previous select (file id: 0x%04x - %s)', pinfo.number, previous.selected_file, FILE_IDENTIFIERS[previous.selected_file]))
+        --print(string.format('frame: %s - found matching response to previous select (file id: 0x%04x - %s)', pinfo.number, previous.selected_file, FILE_IDENTIFIERS[previous.selected_file]))
 
         local current = deepcopy(previous)
         current.instruction = ins
@@ -105,7 +105,7 @@ function p.dissector(tvb, pinfo, tree)
     then
         -- read record after response
         -- TODO currently works only for one READ RECORD after a GET RESPONSE, and for multiple without interruption through TERMINAL RESPONSE or FETCH proactive
-        print(string.format('frame: %s - found matching read record to previous select (file id: 0x%04x - %s) response', pinfo.number, previous.selected_file, FILE_IDENTIFIERS[previous.selected_file]))
+        --print(string.format('frame: %s - found matching read record to previous select (file id: 0x%04x - %s) response', pinfo.number, previous.selected_file, FILE_IDENTIFIERS[previous.selected_file]))
 
         local current = deepcopy(previous)
         current.instruction = ins
@@ -121,7 +121,7 @@ function p.dissector(tvb, pinfo, tree)
     then
         -- read binary after response
         -- TODO currently works only for one READ BINARY after a GET RESPONSE
-        print(string.format('frame: %s - found matching read binary to previous select (file id: 0x%04x - %s) response', pinfo.number, previous.selected_file, FILE_IDENTIFIERS[previous.selected_file]))
+        --print(string.format('frame: %s - found matching read binary to previous select (file id: 0x%04x - %s) response', pinfo.number, previous.selected_file, FILE_IDENTIFIERS[previous.selected_file]))
 
         local current = deepcopy(previous)
         current.instruction = ins

@@ -61,9 +61,9 @@ function p.dissector(buffer, pinfo, tree)
             _G.conversations[pinfo.number].expect_read_record_length = buffer(4, 2):uint() -- store this for conversation mapping
             _G.conversations[pinfo.number].expect_read_records_total = buffer(6, 1):uint() -- store this for conversation mapping
             _G.conversations[pinfo.number].next_read_record_nr = _G.conversations[pinfo.number].next_read_record_nr + 1 -- store this for conversation mapping
-            print(string.format('frame: %s - set expect_read_record_length to: %s', pinfo.number, _G.conversations[pinfo.number].expect_read_record_length))
-            print(string.format('frame: %s - set expect_read_records_total to: %s', pinfo.number, _G.conversations[pinfo.number].expect_read_records_total))
-            print(string.format('frame: %s - set next_read_record_nr to: %s', pinfo.number, _G.conversations[pinfo.number].next_read_record_nr))
+            --print(string.format('frame: %s - set expect_read_record_length to: %s', pinfo.number, _G.conversations[pinfo.number].expect_read_record_length))
+            --print(string.format('frame: %s - set expect_read_records_total to: %s', pinfo.number, _G.conversations[pinfo.number].expect_read_records_total))
+            --print(string.format('frame: %s - set next_read_record_nr to: %s', pinfo.number, _G.conversations[pinfo.number].next_read_record_nr))
 
         end
         return 7 -- processed bytes

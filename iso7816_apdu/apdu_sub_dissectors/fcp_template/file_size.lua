@@ -17,7 +17,7 @@ function p.dissector(buffer, pinfo, tree)
 
     if _G.conversations[pinfo.number] then
         _G.conversations[pinfo.number].expect_read_binary_file_size = file_size -- store this for conversation mapping
-        print(string.format('frame: %s - set expect_read_binary_file_size to: %s', pinfo.number, file_size))
+        --print(string.format('frame: %s - set expect_read_binary_file_size to: %s', pinfo.number, file_size))
     end
 
     -- see (TS 102 221) 11.1.1.4.1 - File size '80'
