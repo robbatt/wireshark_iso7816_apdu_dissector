@@ -9,18 +9,19 @@ local pf = {
 }
 p.fields = pf
 
+local df = 'apdu_sub_dissectors/fcp_template/proprietary_info/'
 local dt = DissectorTable.new('iso7816.apdu.fcp.proprietary_info', 'ISO7816-APDU fcp template - proprietary info - sub-dissectors', ftypes.UINT8, base.HEX, p)
-dt:add(0x80, require('apdu_sub_dissectors/fcp_template/proprietary_info/uicc_characteristics'))
-dt:add(0x81, require('apdu_sub_dissectors/fcp_template/proprietary_info/application_power_consumption'))
-dt:add(0x82, require('apdu_sub_dissectors/fcp_template/proprietary_info/minimum_application_clock_frequency'))
-dt:add(0x83, require('apdu_sub_dissectors/fcp_template/proprietary_info/amount_of_available_memory'))
-dt:add(0x84, require('apdu_sub_dissectors/fcp_template/proprietary_info/file_details'))
-dt:add(0x85, require('apdu_sub_dissectors/fcp_template/proprietary_info/reserved_file_size'))
-dt:add(0x86, require('apdu_sub_dissectors/fcp_template/proprietary_info/maximum_file_size'))
-dt:add(0x87, require('apdu_sub_dissectors/fcp_template/proprietary_info/supported_system_commands'))
-dt:add(0x88, require('apdu_sub_dissectors/fcp_template/proprietary_info/specific_uicc_environmental_conditions'))
-dt:add(0x89, require('apdu_sub_dissectors/fcp_template/proprietary_info/platform_to_platform_CAT_Secured_APDU'))
-dt:add(0xc0, require('apdu_sub_dissectors/fcp_template/proprietary_info/expect_read_binary'))
+dt:add(0x80, require(df .. 'uicc_characteristics'))
+dt:add(0x81, require(df .. 'application_power_consumption'))
+dt:add(0x82, require(df .. 'minimum_application_clock_frequency'))
+dt:add(0x83, require(df .. 'amount_of_available_memory'))
+dt:add(0x84, require(df .. 'file_details'))
+dt:add(0x85, require(df .. 'reserved_file_size'))
+dt:add(0x86, require(df .. 'maximum_file_size'))
+dt:add(0x87, require(df .. 'supported_system_commands'))
+dt:add(0x88, require(df .. 'specific_uicc_environmental_conditions'))
+dt:add(0x89, require(df .. 'platform_to_platform_CAT_Secured_APDU'))
+dt:add(0xc0, require(df .. 'expect_read_binary'))
 
 function p.dissector(buffer, pinfo, tree)
 

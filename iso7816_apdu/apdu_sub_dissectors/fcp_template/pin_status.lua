@@ -16,10 +16,10 @@ local pf = {
 
 }
 p.fields = pf
-
+local df = 'apdu_sub_dissectors/fcp_template/pin_status/'
 local dt = DissectorTable.new('iso7816.apdu.fcp.pin_status', 'ISO7816-APDU fcp template - pin status - sub-dissectors', ftypes.UINT8, base.HEX, p)
-dt:add(0x95, require('apdu_sub_dissectors/fcp_template/pin_status/usage_qualifier'))
-dt:add(0x83, require('apdu_sub_dissectors/fcp_template/pin_status/key_reference'))
+dt:add(0x95, require(df .. 'usage_qualifier'))
+dt:add(0x83, require(df .. 'key_reference'))
 
 function p.dissector(buffer, pinfo, tree)
 

@@ -8,19 +8,20 @@ local pf = {
 }
 p.fields = pf
 
+local df = 'apdu_sub_dissectors/fcp_template/'
 local dt = DissectorTable.new('iso7816.apdu.fcp', 'ISO7816-APDU fcp template sub-dissectors', ftypes.UINT8, base.HEX, p)
-dt:add(0x82, require('apdu_sub_dissectors/fcp_template/file_descriptor'))
-dt:add(0x83, require('apdu_sub_dissectors/fcp_template/file_identifier'))
-dt:add(0x88, require('apdu_sub_dissectors/fcp_template/file_identifier_short'))
-dt:add(0x84, require('apdu_sub_dissectors/fcp_template/df_name_aid'))
-dt:add(0xA5, require('apdu_sub_dissectors/fcp_template/proprietary_info'))
-dt:add(0x8A, require('apdu_sub_dissectors/fcp_template/life_cycle_status'))
-dt:add(0x8C, require('apdu_sub_dissectors/fcp_template/security_attribute_compact'))
-dt:add(0xAB, require('apdu_sub_dissectors/fcp_template/security_attribute_expanded'))
-dt:add(0x8B, require('apdu_sub_dissectors/fcp_template/security_attribute_referenced_expanded'))
-dt:add(0xC6, require('apdu_sub_dissectors/fcp_template/pin_status'))
-dt:add(0x80, require('apdu_sub_dissectors/fcp_template/file_size'))
-dt:add(0x81, require('apdu_sub_dissectors/fcp_template/file_size_total'))
+dt:add(0x82, require(df .. 'file_descriptor'))
+dt:add(0x83, require(df .. 'file_identifier'))
+dt:add(0x88, require(df .. 'file_identifier_short'))
+dt:add(0x84, require(df .. 'df_name_aid'))
+dt:add(0xA5, require(df .. 'proprietary_info'))
+dt:add(0x8A, require(df .. 'life_cycle_status'))
+dt:add(0x8C, require(df .. 'security_attribute_compact'))
+dt:add(0xAB, require(df .. 'security_attribute_expanded'))
+dt:add(0x8B, require(df .. 'security_attribute_referenced_expanded'))
+dt:add(0xC6, require(df .. 'pin_status'))
+dt:add(0x80, require(df .. 'file_size'))
+dt:add(0x81, require(df .. 'file_size_total'))
 
 function p.dissector(buffer, pinfo, tree)
 
