@@ -330,6 +330,13 @@ function M.bswap16(x)  -- BitOp style
 end
 local bswap16 = M.bswap16
 
+function M.bswap8(x)  -- BitOp style
+  local a = band(x, 0x0f); x = rshift(x, 4)
+  local b = band(x, 0x0f)
+  return lshift(a, 4) + b
+end
+local bswap8 = M.bswap8
+
 function M.rrotate(x, disp)  -- Lua5.2 inspired
   disp = disp % 32
   local low = band(x, 2^disp-1)

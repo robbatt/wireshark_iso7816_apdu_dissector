@@ -16,10 +16,10 @@ function nibble_swap(buffer)
     local offset = 0
 
     while offset < length do
-        local integer16 = buffer(offset, 2):uint()
-        local swapped16 = BIT.bswap16(integer16)
-        parsed_val = string.format('%s%02x', parsed_val, swapped16)
-        offset = offset + 2
+        local integer8 = buffer(offset, 1):uint()
+        local swapped8 = BIT.bswap8(integer8)
+        parsed_val = string.format('%s%02x', parsed_val, swapped8)
+        offset = offset + 1
     end
 
     return parsed_val
