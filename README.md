@@ -16,7 +16,7 @@ In the initial version, there is support for the following scenarios:
 
 Alternative: don't install, run the plugin via cli parameter from the `project folder`
 - either run the provided shell script `wireshark_iso7816.sh` (change `pcapng` file accordingly)
-- or call wireshark manually `wireshark -X lua_script:iso7816_adpu.lua -r your.pcapng`
+- or call wireshark manually `wireshark -X lua_script:iso7816_apdu.lua -r your.pcapng`
 
 ## USAGE
 
@@ -27,16 +27,16 @@ Alternative: don't install, run the plugin via cli parameter from the `project f
 
 The example flow of `SELECT -> GET RESPONSE -> READ BINARY` includes the following:
 1. `SELECT`
-   1. The main dissector `iso7816_adpu.lua` stores the selected file id and expected response length
+   1. The main dissector `iso7816_apdu.lua` stores the selected file id and expected response length
 2. `GET RESPONSE`
-   1. `iso7816_adpu.lua` checks if the buffer length matches the previous `SELECT` and will store conversation data
-   2. `iso7816_adpu.lua` will call `dissect_remaining_tlvs` with a `DissectorTable` as parameter
+   1. `iso7816_apdu.lua` checks if the buffer length matches the previous `SELECT` and will store conversation data
+   2. `iso7816_apdu.lua` will call `dissect_remaining_tlvs` with a `DissectorTable` as parameter
    3. `dissect_remaining_tlvs` extracts the first byte of the given data buffer (tlv-tag) and uses it as key to find a matching sub-dissector
    4. the sub-dissector will parse the according tlv section of the data and add tree elements to the wireshark ui output
    5. if the sub-dissectors find data that points to a required followup `READ BINARY` or `READ RECORD` to read a file reference, they will store relevant data.
 3. `READ BINARY`
-   1. `iso7816_adpu.lua` checks if the sub-dissectors of the previous `GET RESPONSE` left conversation data that matches this commands data
-   2. `iso7816_adpu.lua` will call `dissect_file_content` with a `DissectorTable` as parameter
+   1. `iso7816_apdu.lua` checks if the sub-dissectors of the previous `GET RESPONSE` left conversation data that matches this commands data
+   2. `iso7816_apdu.lua` will call `dissect_file_content` with a `DissectorTable` as parameter
    3. `dissect_file_content` extracts the selected file from the conversation data of the previous `SELECT` and uses it as key to find a matching sub-dissector
    4. the sub-dissector will parse the file data and add tree elements to the wireshark ui output
    5. if the sub-dissectors find data that points to a required followup `READ BINARY` or `READ RECORD` to read a file reference, they will store relevant data.
