@@ -7,6 +7,13 @@ YES_NO = {
     [1] = "Yes"
 }
 
+INSTRUCTIONS = {
+    [0xa4] = 'SELECT',
+    [0xc0] = 'GET RESPONSE',
+    [0xb0] = 'READ BINARY',
+    [0xb2] = 'READ RECORD',
+}
+
 FILE_IDENTIFIERS = {
     [0x3F00] = 'MF',
     [0x2F00] = 'EF.DIR',
@@ -226,4 +233,71 @@ FILE_IDENTIFIERS = {
     [0x4F05] = 'EF.5GAUTHKEYS',
 
     [0x7FFF] = 'ADF',
+}
+
+--H.1 List of SFI Values at the USIM ADF Level
+
+SFI_FILE_MAPPING = {
+    [0x01] = 0x6FB7,  -- Emergency call codes
+    [0x02] = 0x6F05,  -- Language indication
+    [0x03] = 0x6FAD,  -- Administrative data
+    [0x04] = 0x6F38,  -- USIM service table
+    [0x05] = 0x6F56,  -- Enabled services table
+    [0x06] = 0x6F78,  -- Access control class
+    [0x07] = 0x6F07,  -- IMSI
+    [0x08] = 0x6F08,  -- Ciphering and integrity keys
+    [0x09] = 0x6F09,  -- Ciphering and integrity keys for packet switched domain
+    [0x0A] = 0x6F60,  -- User PLMN selector
+    [0x0B] = 0x6F7E,  -- Location information
+    [0x0C] = 0x6F73,  -- Packet switched location information
+    [0x0D] = 0x6F7B,  -- Forbidden PLMNs
+    [0x0E] = 0x6F48,  -- CBMID
+    [0x0F] = 0x6F5B,  -- Hyperframe number
+    [0x10] = 0x6F5C,  -- Maximum value of hyperframe number
+    [0x11] = 0x6F61,  -- Operator PLMN selector
+    [0x12] = 0x6F31,  -- Higher Priority PLMN search period
+    [0x13] = 0x6F62,  -- Preferred HPLMN access technology
+    [0x14] = 0x6F80,  -- Incoming call information
+    [0x15] = 0x6F81,  -- Outgoing call information
+    [0x16] = 0x6F4F,  -- Capability configuration parameters 2
+    [0x17] = 0x6F06,  -- Access Rule Reference
+    [0x19] = 0x6FC5,  -- PLMN Network Name
+    [0x1A] = 0x6FC6,  -- Operator Network List
+    [0x1B] = 0x6FCD,  -- Service Provider Display Information
+    [0x1C] = 0x6F39,  -- Accumulated Call Meter (see note)
+    [0x1D] = 0x6FD9,  -- Equivalent HPLMN
+    [0x1E] = 0x6FE3,  -- EPS location information
+    [0x18] = 0x6FE4,  -- EPS NAS Security Context
+}
+SFI_FILE_IDENTIFIERS = {
+    [0x01] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x01]],  -- Emergency call codes
+    [0x02] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x02]],  -- Language indication
+    [0x03] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x03]],  -- Administrative data
+    [0x04] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x04]],  -- USIM service table
+    [0x05] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x05]],  -- Enabled services table
+    [0x06] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x06]],  -- Access control class
+    [0x07] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x07]],  -- IMSI
+    [0x08] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x08]],  -- Ciphering and integrity keys
+    [0x09] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x09]],  -- Ciphering and integrity keys for packet switched domain
+    [0x0A] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x0A]],  -- User PLMN selector
+    [0x0B] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x0B]],  -- Location information
+    [0x0C] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x0C]],  -- Packet switched location information
+    [0x0D] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x0D]],  -- Forbidden PLMNs
+    [0x0E] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x0E]],  -- CBMID
+    [0x0F] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x0F]],  -- Hyperframe number
+    [0x10] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x10]],  -- Maximum value of hyperframe number
+    [0x11] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x11]],  -- Operator PLMN selector
+    [0x12] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x12]],  -- Higher Priority PLMN search period
+    [0x13] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x13]],  -- Preferred HPLMN access technology
+    [0x14] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x14]],  -- Incoming call information
+    [0x15] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x15]],  -- Outgoing call information
+    [0x16] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x16]],  -- Capability configuration parameters 2
+    [0x17] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x17]],  -- Access Rule Reference
+    [0x19] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x19]],  -- PLMN Network Name
+    [0x1A] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x1A]],  -- Operator Network List
+    [0x1B] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x1B]],  -- Service Provider Display Information
+    [0x1C] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x1C]],  -- Accumulated Call Meter (see note)
+    [0x1D] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x1D]],  -- Equivalent HPLMN
+    [0x1E] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x1E]],  -- EPS location information
+    [0x18] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x18]],  -- EPS NAS Security Context
 }
