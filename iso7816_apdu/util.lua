@@ -2,7 +2,7 @@
 -- prevent wireshark loading this file as a plugin
 if not _G['iso7816_apdu'] then return end
 
-function dissect_remaining_tlvs(buffer, pinfo, tree, protocol, dissector_table)
+function dissect_response_tlvs(buffer, pinfo, tree, protocol, dissector_table)
     local offset = 0
     local length = buffer:len()
     while (offset < length) do

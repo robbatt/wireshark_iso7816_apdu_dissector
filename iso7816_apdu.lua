@@ -186,7 +186,7 @@ function p.dissector(tvb, pinfo, tree)
             -- parse binary content
             offset = offset + dissect_file_content(buffer, pinfo, subtree, p, dt_parsers, current.selected_file)
         else
-            offset = offset + dissect_remaining_tlvs(buffer, pinfo, subtree, p, dt)
+            offset = offset + dissect_response_tlvs(buffer, pinfo, subtree, p, dt)
         end
 
     end

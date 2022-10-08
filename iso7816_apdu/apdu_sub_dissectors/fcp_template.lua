@@ -33,7 +33,7 @@ function p.dissector(buffer, pinfo, tree)
     local offset = 2
 
     ---- this will call the according sub-dissector for each section
-    offset = offset + dissect_remaining_tlvs(buffer(offset), pinfo, tree, p, dt)
+    offset = offset + dissect_response_tlvs(buffer(offset), pinfo, tree, p, dt)
 
     return offset -- processed bytes
 end
