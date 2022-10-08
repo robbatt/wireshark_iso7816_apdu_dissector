@@ -57,10 +57,13 @@ function p.dissector(buffer, pinfo, tree)
         subtree:add(pf.record_length, buffer(4, 2))
         subtree:add(pf.number_of_records, buffer(6, 1))
 
-        if _G.conversations[pinfo.number] then
-            _G.conversations[pinfo.number].expect_read_record_length = buffer(4, 2):uint() -- store this for conversation mapping
-            _G.conversations[pinfo.number].expect_read_records_total = buffer(6, 1):uint() -- store this for conversation mapping
-            _G.conversations[pinfo.number].next_read_record_nr = _G.conversations[pinfo.number].next_read_record_nr + 1 -- store this for conversation mapping
+        local conversation = get_current_conversation(pinfo)
+        if conversation and not pinfo.visited then
+            --print(string.format('frame: %s - file_descriptor - updating current conversation, expected read records', pinfo.number))
+
+            conversation.expect_read_record_length = buffer(4, 2):uint() -- store this for conversation mapping
+            conversation.expect_read_records_total = buffer(6, 1):uint() -- store this for conversation mapping
+            conversation.next_read_record_nr = conversation.next_read_record_nr + 1 -- store this for conversation mapping
             --print(string.format('frame: %s - set expect_read_record_length to: %s', pinfo.number, _G.conversations[pinfo.number].expect_read_record_length))
             --print(string.format('frame: %s - set expect_read_records_total to: %s', pinfo.number, _G.conversations[pinfo.number].expect_read_records_total))
             --print(string.format('frame: %s - set next_read_record_nr to: %s', pinfo.number, _G.conversations[pinfo.number].next_read_record_nr))

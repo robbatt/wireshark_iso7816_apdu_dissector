@@ -15,8 +15,9 @@ function p.dissector(buffer, pinfo, tree)
     local read_offset_f = buffer(2, read_offset_len)
     local read_offset = read_offset_f:uint()
 
-    if _G.conversations[pinfo.number] then
-        _G.conversations[pinfo.number].expect_read_binary_offset = read_offset -- store this for conversation mapping
+    local current = get_current_conversation(pinfo)
+    if current and not pinfo.visited then
+        current.expect_read_binary_offset = read_offset -- store this for conversation mapping
         --print(string.format('frame: %s - set expect_read_binary_offset to: %s', pinfo.number, read_offset))
     end
 
