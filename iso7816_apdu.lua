@@ -31,6 +31,8 @@ dt:add(0x62, require('apdu_sub_dissectors/fcp_template'))
 local dt_parsers = DissectorTable.new('iso7816.apdu.file_parsers', 'ISO7816-APDU file parsers', ftypes.UINT8, base.HEX, p)
 dt_parsers:add(0x2fe2, require('apdu_sub_dissectors/file_parsers/iccid'))
 
+local conversation_dissector = require('apdu_sub_dissectors/conversations').dissector
+
 -- Step 3 - add some field(s) to Step 2 protocol
 local pf = {
     instruction = ProtoField.string(p.name .. ".ins", "Instruction"),
@@ -71,7 +73,7 @@ end
 function p.dissector(tvb, pinfo, tree)
     -- copy already processed field(s)
     local apdu_payload = iso7816_apdu_data_f()
-    local gsm_sim = iso7816_gsm_sim_f().tvb(1,3)
+    local gsm_sim = iso7816_gsm_sim_f()
     local ins = f_val(iso7816_apdu_ins_f)
     local le = f_val(iso7816_gsm_sim_le_f)
     --local bin_off = iso7816_gsm_sim_bin_offset_f()
@@ -83,88 +85,11 @@ function p.dissector(tvb, pinfo, tree)
 
     local subtree_apdu = tree:add(p, gsm_sim, 'Iso7816 APDU')
     --subtree_apdu:add(pf.instruction, ins)
-    subtree_apdu:add(pf.instruction, gsm_sim:range(0,1), string.format('Instruction: %s (0x%2x)', INSTRUCTIONS[ins], ins))
-    subtree_apdu:add(pf.sfi_and_offset, gsm_sim:range(1,2))
+    subtree_apdu:add(pf.instruction, gsm_sim.range(1, 1), string.format('Instruction: %s (0x%2x)', INSTRUCTIONS[ins], ins))
+    subtree_apdu:add(pf.sfi_and_offset, gsm_sim.range(2, 2))
 
-
-    if ins == 0xa4 -- instruction: SELECT (0xa4) with Response Ready (status word first byte 0x61)
-            and sw_f
-            and sw_f.tvb(0, 1):uint() == 0x61
-    then
-        local sw2 = sw_f.tvb(1, 1):uint() -- expected response length
-        local selected_file = f_val(iso7816_gsm_sim_file_id_f)
-        --print(string.format('frame: %s - found select (file id: 0x%04x - %s)', pinfo.number, selected_file, FILE_IDENTIFIERS[selected_file]))
-
-        local conversation = APDU_Conversation:new(pinfo.number, ins)
-        -- TODO seems SELECT can also reference 2 files at once, but this field only stores one value (simtrace2_bg95_boot_roam_profile.pcapng - frame:29)
-        conversation.selected_file = selected_file
-        conversation.expect_response_length = sw2
-        conversation.conversation_start_frame = pinfo.number
-        _G.conversations[pinfo.number] = conversation
-
-    elseif ins == 0xc0 -- instruction: GET RESPONSE (0xc0)
-            and le
-            and previous
-            and previous.expect_response_length == le
-    then
-        -- response
-        --print(string.format('frame: %s - found matching response to previous select (file id: 0x%04x - %s)', pinfo.number, previous.selected_file, FILE_IDENTIFIERS[previous.selected_file]))
-
-        local current = deepcopy(previous)
-        current.instruction = ins
-        current.frame_number = pinfo.number
-        current.expect_response_length = 0x00
-        _G.conversations[pinfo.number] = current
-
-    elseif ins == 0xb2 -- instruction: READ RECORD (0xb2)
-            and previous
-            and le and le == previous.expect_read_record_length
-            and record_nr and record_nr == previous.next_read_record_nr
-    then
-        -- read record after response
-        -- TODO currently works only for one READ RECORD after a GET RESPONSE, and for multiple without interruption through TERMINAL RESPONSE or FETCH proactive
-        --print(string.format('frame: %s - found matching read record to previous select (file id: 0x%04x - %s) response', pinfo.number, previous.selected_file, FILE_IDENTIFIERS[previous.selected_file]))
-
-        local current = deepcopy(previous)
-        current.instruction = ins
-        current.frame_number = pinfo.number
-        current.expect_read_record_length = 0x00
-        current.next_read_record_nr = 0x00
-        _G.conversations[pinfo.number] = current
-
-    elseif ins == 0xb0 then -- instruction: READ BINARY
-        local buffer = gsm_sim:range(1,2)
-        local sfi_marker = buffer:range(0,1):bitfield(0,1)
-        local has_sfi = sfi_marker == 0x1
-        local sfi = buffer:range(0,1):bitfield(3,5)
-        local read_binary_offset_sfi = buffer:range(1, 1):uint()
-        local read_binary_offset = buffer:range(0,2):bitfield(1,15)
-
-        subtree_apdu:add(pf.sfi_marker, buffer)
-
-        if has_sfi then
-            subtree_apdu:add(pf.sfi, buffer)
-            subtree_apdu:add(pf.read_binary_offset_sfi, buffer)
-            --print(string.format('frame: %s - found read binary with sfi marker 0x%01x, sfi 0x%02x, sfi read binary offset 0x%02x (0x%04x) %s', pinfo.number, sfi_marker, sfi, read_binary_offset_sfi, buffer:uint(), SFI_FILE_MAPPING[sfi]))
-
-        elseif previous
-                and le and le == previous.expect_read_binary_file_size
-                and buffer and read_binary_offset == previous.expect_read_binary_offset
-        then
-            -- READ BINARY following a GET RESPONSE
-            subtree_apdu:add(pf.read_binary_offset, read_binary_offset)
-            --print(string.format('frame: %s - found read binary without ########### sfi marker 0x%01x, read binary offset 0x%02x (0x%04x)', pinfo.number, sfi_marker, read_binary_offset, buffer:uint()))
-
-            --print(string.format('frame: %s - found matching read binary to previous select (file id: 0x%04x - %s) response', pinfo.number, previous.selected_file, FILE_IDENTIFIERS[previous.selected_file]))
-            local current = deepcopy(previous)
-            current.instruction = ins
-            current.frame_number = pinfo.number
-            current.expect_read_binary_offset = 0x00
-            current.expect_read_binary_file_size = 0x00
-            _G.conversations[pinfo.number] = current
-
-        end
-    end
+    -- dissect APDU command conversation (don't count dissected bytes, command dissector will)
+    conversation_dissector:call(gsm_sim.range():tvb(), pinfo, subtree_apdu)
 
     if apdu_payload then
         -- override protocol column
