@@ -32,6 +32,7 @@ local dt_parsers = DissectorTable.new('iso7816.apdu.file_parsers', 'ISO7816-APDU
 dt_parsers:add(0x2fe2, require('apdu_sub_dissectors/file_parsers/iccid'))
 
 local conversation_dissector = require('apdu_sub_dissectors/conversations').dissector
+local status_dissector = require('apdu_sub_dissectors/status').dissector
 
 -- Step 3 - add some field(s) to Step 2 protocol
 local pf = {
@@ -115,6 +116,9 @@ function p.dissector(tvb, pinfo, tree)
         end
 
     end
+
+    -- dissect APDU status word
+    offset = offset + status_dissector:call(sw_f.range():tvb(), pinfo, subtree_apdu)
 
     return offset
 end
