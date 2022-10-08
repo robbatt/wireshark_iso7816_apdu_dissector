@@ -12,7 +12,8 @@ p.fields = pf
 function p.dissector(buffer, pinfo, tree)
 
     local read_offset_len = buffer(1, 1):uint()
-    local read_offset = buffer(2, read_offset_len):uint()
+    local read_offset_f = buffer(2, read_offset_len)
+    local read_offset = read_offset_f:uint()
 
     if _G.conversations[pinfo.number] then
         _G.conversations[pinfo.number].expect_read_binary_offset = read_offset -- store this for conversation mapping
@@ -25,7 +26,7 @@ function p.dissector(buffer, pinfo, tree)
 
     -- see (TS 102 221) 11.1.1.4.6.5 - File details
     subtree:add(pf.section, buffer(0, 2), string.format('Tag: 0x%02x, Content: %s byte(s)', buffer(0, 1):uint(), buffer(1, 1):uint()))
-    subtree:add(pf.read_offset, read_offset)
+    subtree:add(pf.read_offset, read_offset_f)
 
     return 2 + read_offset_len -- processed bytes
 end

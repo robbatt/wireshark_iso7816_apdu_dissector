@@ -28,7 +28,8 @@ function p.dissector(buffer, pinfo, tree)
     -- FCP - File Control Parameters (in Response)
     -- see (TS 102 221) 11.1.1.3 Response Data
     -- see (TS 102 221) 11.1.1.3.0 Base coding
-    tree:add(pf.info, buffer(0, 2), string.format('FCP Template, Tag: 0x62, Length: %s bytes', buffer(1, 1):uint()))
+    local le = buffer(1, 1):uint()
+    tree:add(pf.info, buffer:range(), string.format('FCP Template, Tag: 0x62, Content: %s byte(s)', le))
     local offset = 2
 
     ---- this will call the according sub-dissector for each section
