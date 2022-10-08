@@ -22,6 +22,9 @@ function dissect_response_tlvs(buffer, pinfo, tree, protocol, dissector_table)
 end
 
 function dissect_file_content(buffer, pinfo, tree, protocol, dissector_table, file_id)
+    if not file_id then
+        return 0
+    end
     local file_parser = dissector_table:get_dissector(file_id)
     if file_parser then
         --print(string.format('frame: %s - found a file parser for file: 0x%02x - %s - in dissector: %s', pinfo.number, file_id, FILE_IDENTIFIERS[file_id], protocol.name))
