@@ -7,8 +7,6 @@ local LOCATION_UPDATE_STATUS = {
     [0x00] = 'updated'
 }
 
-local BIT = require('numberlua')
-
 local p = Proto.new("iso7816.apdu.file_parsers.loci", "LOCI (Location Information):")
 local pf = {
     tmsi = ProtoField.uint32(p.name .. ".tmsi", "TMSI", base.HEX),
