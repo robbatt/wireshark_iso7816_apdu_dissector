@@ -8,6 +8,7 @@ dt_parsers:add(0x6f07, require('apdu_sub_dissectors/file_parsers/IMSI'))
 dt_parsers:add(0x6f7e, require('apdu_sub_dissectors/file_parsers/LOCI'))
 dt_parsers:add(0x6f73, require('apdu_sub_dissectors/file_parsers/PSLOCI'))
 dt_parsers:add(0x6fe3, require('apdu_sub_dissectors/file_parsers/EPSLOCI'))
+dt_parsers:add(0x6f62, require('apdu_sub_dissectors/file_parsers/HPLMNwAcT'))
 
 local p = Proto.new("iso7816.apdu.instructions.READ_BINARY", "READ_BINARY")
 local pf = {
@@ -58,7 +59,7 @@ function p.dissector(buffer, pinfo, tree)
     if previous
             and previous.instruction == INSTRUCTIONS_CODE.GET_RESPONSE
             and le and le == previous.expect_read_binary_file_size
-            and read_binary_offset == previous.expect_read_binary_offset
+            --and read_binary_offset == previous.expect_read_binary_offset
     then
         selected_file = get_current_conversation(pinfo).selected_file
         tree:add(pf.read_binary_offset,  sfi_and_offset_f)
