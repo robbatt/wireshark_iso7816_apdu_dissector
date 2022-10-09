@@ -14,6 +14,7 @@ function p.dissector(buffer, pinfo, tree)
     -- optional, add a new level (dropdown) for this section
     local subtree = tree:add(p, buffer)
 
+    local entries_printed = 0
     for i=0,buffer:len() - 1,5 do
         local plmn_f = buffer:range(i,3)
         local ATI_f = buffer:range(i+3,2)
@@ -24,7 +25,12 @@ function p.dissector(buffer, pinfo, tree)
         if mcc and mnc then
             subtree:add(pf.mcc_mnc, plmn_f, string.format('%s/%s (0x%06x)',mcc, mnc,  plmn_f:uint()))
             subtree:add(pf.ati, ATI_f)
+            entries_printed = entries_printed + 1
         end
+    end
+
+    if entries_printed == 0 then
+        subtree:add(pf.mcc_mnc, buffer:range(), 'none, only invalid or empty entries found')
     end
 
     return buffer:len() -- processed bytes
