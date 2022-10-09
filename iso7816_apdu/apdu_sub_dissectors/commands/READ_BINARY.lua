@@ -5,6 +5,7 @@ if not _G['iso7816_apdu'] then return end
 local dt_parsers = DissectorTable.new('iso7816.apdu.file_parsers', 'ISO7816-APDU file parsers', ftypes.UINT8, base.HEX, p)
 dt_parsers:add(0x2fe2, require('apdu_sub_dissectors/file_parsers/ICCID'))
 dt_parsers:add(0x6f07, require('apdu_sub_dissectors/file_parsers/IMSI'))
+dt_parsers:add(0x6f7e, require('apdu_sub_dissectors/file_parsers/LOCI'))
 
 local p = Proto.new("iso7816.apdu.instructions.READ_BINARY", "READ_BINARY")
 local pf = {

@@ -19,3 +19,27 @@ function nibble_swap(buffer)
 
     return parsed_val
 end
+
+function mcc(buffer)
+    if buffer:len() ~= 3 then
+        return 0 --'buffer length != 3 byte'
+    end
+
+    local mcc_start = BIT.bswap8(buffer:range(0,1):uint())
+    local mcc_end = buffer:range(1,1):bitfield(4,4)
+
+    local mcc = string.format('%02x%01x', mcc_start, mcc_end)
+    return tonumber(mcc)
+end
+
+function mnc(buffer)
+    if buffer:len() ~= 3 then
+        return 0 -- 'buffer length != 3 byte'
+    end
+
+    local mnc_start = BIT.bswap8(buffer:range(2,1):uint())
+    local mnc_end = buffer:range(1,1):bitfield(0,4)
+
+    local mnc = string.format('%02x%01x', mnc_start, mnc_end)
+    return tonumber(mnc)
+end
