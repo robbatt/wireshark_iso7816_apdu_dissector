@@ -39,7 +39,7 @@ function p.dissector(buffer, pinfo, tree)
     local is_read_binary_matching_previous_get_response = ins == INSTRUCTIONS_CODE.READ_BINARY
             and previous
             and previous.instruction == INSTRUCTIONS_CODE.GET_RESPONSE
-            and le == previous.expect_read_binary_file_size
+            and le <= previous.expect_read_binary_file_size
             and previous.expect_read_binary_offset and previous.expect_read_binary_offset >= 0
 
     -- get or create current conversation item
