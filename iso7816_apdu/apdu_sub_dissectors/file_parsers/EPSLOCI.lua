@@ -26,12 +26,6 @@ p.fields = pf
 
 
 function p.dissector(buffer, pinfo, tree)
-    -- from: 0bf6130184fa989ec851e4bf 1301849b02 00
-
-    -- Globally Unique Temporary Identifier (GUTI)  '0B F6 13 01 84 FA 98 9E C8 51 E4 BF'
-    -- 	 	Last visited registered Tracking Area Identity (TAI)  '13 01 84 9B 02'
-    -- 	 	EPS Update Status  reserved
-
     local gtui_f = buffer:range(0, 12)
     local tai_f = buffer:range(12, 5)
     local mcc_mnc_f = buffer:range(12, 3)
