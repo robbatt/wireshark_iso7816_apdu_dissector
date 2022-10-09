@@ -4,7 +4,10 @@ if not _G['iso7816_apdu'] then
 end
 
 local LOCATION_UPDATE_STATUS = {
-    [0x00] = 'updated'
+    [0] = 'updated',
+    [1] = 'not updated',
+    [2] = 'PLMN not allowed',
+    [3] = 'Location Area not allowed'
 }
 
 local p = Proto.new("iso7816.apdu.file_parsers.loci", "LOCI (Location Information):")
@@ -23,7 +26,7 @@ p.fields = pf
 function p.dissector(buffer, pinfo, tree)
     local tmsi_f = buffer:range(0, 4)
     local mcc_mnc_f = buffer:range(4, 3)
-    local lac_f = buffer:range(7, 2) --tonumber( swapped:sub(0, 1) )
+    local lac_f = buffer:range(7, 2)
     local rfu_f = buffer:range(9, 1)
     local status_f = buffer:range(10, 1)
 

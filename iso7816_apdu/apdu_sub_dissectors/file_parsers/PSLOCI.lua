@@ -4,7 +4,10 @@ if not _G['iso7816_apdu'] then
 end
 
 local ROUTING_AREA_UPDATE_STATUS = {
-    [0x02] = 'PLMN not allowed'
+    [0] = 'updated',
+    [1] = 'not updated',
+    [2] = 'PLMN not allowed',
+    [3] = 'Location Area not allowed'
 }
 
 local p = Proto.new("iso7816.apdu.file_parsers.psloci", "PSLOCI (Packet Switched Location Information):")
