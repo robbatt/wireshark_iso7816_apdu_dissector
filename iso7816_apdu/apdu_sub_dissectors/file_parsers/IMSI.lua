@@ -2,8 +2,6 @@
 -- prevent wireshark loading this file as a plugin
 if not _G['iso7816_apdu'] then return end
 
-local BIT = require('numberlua')
-
 local p = Proto.new("iso7816.apdu.file_parsers.imsi", "IMSI:")
 local pf = {
     length = ProtoField.uint8(p.name .. ".length", "Length", base.DEC),
@@ -11,21 +9,6 @@ local pf = {
     parsed = ProtoField.string(p.name .. ".parsed", "IMSI"),
 }
 p.fields = pf
-
-function nibble_swap(buffer)
-    local parsed_val = ''
-    local length = buffer:len()
-    local offset = 0
-
-    while offset < length do
-        local integer8 = buffer(offset, 1):uint()
-        local swapped8 = BIT.bswap8(integer8)
-        parsed_val = string.format('%s%02x', parsed_val, swapped8)
-        offset = offset + 1
-    end
-
-    return parsed_val
-end
 
 function p.dissector(buffer, pinfo, tree)
     local le_f =  buffer:range(0,1)
