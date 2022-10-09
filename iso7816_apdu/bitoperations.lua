@@ -28,7 +28,7 @@ function mcc(buffer)
     local mcc_start = BIT.bswap8(buffer:range(0,1):uint())
     local mcc_end = buffer:range(1,1):bitfield(4,4)
 
-    local mcc = string.format('%02x%01x', mcc_start, mcc_end)
+    local mcc = string.format('%02x%01x', mcc_start, mcc_end):gsub('f','')
     return tonumber(mcc)
 end
 
@@ -40,6 +40,6 @@ function mnc(buffer)
     local mnc_start = BIT.bswap8(buffer:range(2,1):uint())
     local mnc_end = buffer:range(1,1):bitfield(0,4)
 
-    local mnc = string.format('%02x%01x', mnc_start, mnc_end)
+    local mnc = string.format('%02x%01x', mnc_start, mnc_end):gsub('f','')
     return tonumber(mnc)
 end
