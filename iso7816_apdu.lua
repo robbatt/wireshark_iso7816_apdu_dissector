@@ -10,7 +10,7 @@ package.prepend_path("iso7816_apdu")
 require('constants')
 require('util')
 require('model/APDU_Conversation')
-require('bitoperations')
+require('bit_operations')
 
 _G.conversations = {}
 
