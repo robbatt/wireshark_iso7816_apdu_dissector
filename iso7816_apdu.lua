@@ -11,6 +11,7 @@ require('constants')
 require('util')
 require('model/APDU_Conversation')
 require('bit_operations')
+require('file_parsers')
 
 _G.conversations = {}
 
