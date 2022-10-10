@@ -11,6 +11,7 @@ dt_parsers:add(0x6fe3, require('apdu_sub_dissectors/file_parsers/EPSLOCI'))
 dt_parsers:add(0x6f62, require('apdu_sub_dissectors/file_parsers/HPLMNwAcT'))
 dt_parsers:add(0x6f61, require('apdu_sub_dissectors/file_parsers/OPLMNwAcT'))
 dt_parsers:add(0x6f7b, require('apdu_sub_dissectors/file_parsers/FPLMN'))
+dt_parsers:add(0x6f31, require('apdu_sub_dissectors/file_parsers/HPPLMN'))
 
 local p = Proto.new("iso7816.apdu.instructions.READ_BINARY", "READ_BINARY")
 local pf = {
