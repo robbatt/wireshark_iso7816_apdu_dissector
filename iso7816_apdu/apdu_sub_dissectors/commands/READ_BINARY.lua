@@ -45,20 +45,18 @@ function p.dissector(buffer, pinfo, tree)
     tree:add(pf.sfi_and_offset, sfi_and_offset_f)
     tree:add(pf.sfi_marker, sfi_and_offset_f)
 
-    -- SFI present, so file can be read directly
-    local sfi_marker = sfi_and_offset_f:bitfield(0,1)
+    local sfi_marker = sfi_and_offset_f:bitfield(0, 1)
     if sfi_marker == 0x1 then
-        local sfi = buffer:range(2,1):bitfield(3,5)
+        -- SFI present, so file can be read directly
+        local sfi = buffer:range(2, 1):bitfield(3, 5)
         selected_file = SFI_FILE_MAPPING[sfi]
         tree:add(pf.sfi, sfi_and_offset_f)
         tree:add(pf.sfi_read_binary_offset, sfi_and_offset_f)
-    end
 
-
-    -- No SFI present, need to get file id from conversation
-    local read_binary_offset = sfi_and_offset_f:bitfield(1,15)
-    --print(string.format('frame: %s - ######## le %s, expected le %s, offset %s, expected offset %s', pinfo.number, le, previous.expect_read_binary_file_size, read_binary_offset, previous.expect_read_binary_offset))
-    if previous
+    elseif previous
+            -- No SFI present, need to get file id from conversation
+            --local read_binary_offset = sfi_and_offset_f:bitfield(1,15)
+            --print(string.format('frame: %s - ######## le %s, expected le %s, offset %s, expected offset %s', pinfo.number, le, previous.expect_read_binary_file_size, read_binary_offset, previous.expect_read_binary_offset))
             and previous.instruction == INSTRUCTIONS_CODE.GET_RESPONSE
             and le and le <= previous.expect_read_binary_file_size
             --and read_binary_offset == previous.expect_read_binary_offset

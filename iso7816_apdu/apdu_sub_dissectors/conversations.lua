@@ -21,6 +21,11 @@ function p.dissector(buffer, pinfo, tree)
     local sw1 = sw_f:range(0, 1):uint() -- status 61: response ready, 90: normal end
     local sw2 = sw_f:range(1, 1):uint() -- expected response length
 
+    local sfi_and_offset_f = buffer:range(2, 2)
+    local has_sfi = sfi_and_offset_f:bitfield(0, 1) == 0x1
+    local sfi = buffer:range(2, 1):bitfield(3, 5)
+    local selected_sfi_file = SFI_FILE_MAPPING[sfi]
+
     local previous = get_previous_conversation(pinfo)
     local current
 
@@ -41,6 +46,7 @@ function p.dissector(buffer, pinfo, tree)
             and previous.instruction == INSTRUCTIONS_CODE.GET_RESPONSE
             and le <= previous.expect_read_binary_file_size
             and previous.expect_read_binary_offset and previous.expect_read_binary_offset >= 0
+            and not has_sfi or (has_sfi and selected_sfi_file == previous.selected_file)
 
     -- get or create current conversation item
     if pinfo.visited then
@@ -61,7 +67,7 @@ function p.dissector(buffer, pinfo, tree)
 
         end
         set_current_conversation(pinfo, current)
-     end
+    end
 
     -- display
     if is_select_with_response
