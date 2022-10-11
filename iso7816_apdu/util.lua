@@ -5,7 +5,7 @@ if not _G['iso7816_apdu'] then return end
 function dissect_response_tlvs(buffer, pinfo, tree, protocol, dissector_table)
     local offset = 0
     local length = buffer:len()
-    while (offset < length) do
+    while (offset < length-1) do
         local tlv_tag = buffer(offset, 1):uint()
         local tlv_dissector = dissector_table:get_dissector(tlv_tag)
         local tlv_length = 2 + buffer(offset + 1, 1):uint()
