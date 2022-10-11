@@ -10,6 +10,7 @@ package.prepend_path("iso7816_apdu")
 require('constants')
 require('util')
 require('model/APDU_Conversation')
+require('conversations')
 require('bit_operations')
 require('file_parsers')
 
@@ -33,6 +34,7 @@ local status_dissector = require('apdu_sub_dissectors/status').dissector
 
 -- Step 3 - add some field(s) to Step 2 protocol
 local pf = {
+    conversation = ProtoField.string(p.name .. ".conversation", "Conversation"),
 }
 p.fields = pf
 
@@ -48,15 +50,28 @@ function p.dissector(tvb, pinfo, tree)
     local sw_f = iso7816_apdu_sw_f()
 
     local subtree_apdu = tree:add(p, gsm_sim, 'Iso7816 APDU')
-
-    -- dissect APDU command conversation (don't count dissected bytes, command dissector will)
-    conversation_dissector:call(gsm_sim.range():tvb(), pinfo, subtree_apdu)
+    local subtree_conversations = subtree_apdu:add(pf.conversation, gsm_sim.range(), 'none detected')
 
     -- dissect APDU command
     offset = offset + command_dissector:call(gsm_sim.range():tvb(), pinfo, subtree_apdu)
 
     -- dissect APDU status word
     offset = offset + status_dissector:call(sw_f.range():tvb(), pinfo, subtree_apdu)
+
+    -- dissect APDU command conversation (don't count dissected bytes, command dissector will)
+    conversation_dissector:call(gsm_sim.range():tvb(), pinfo, subtree_conversations)
+
+    local current = get_current_conversation(pinfo)
+    if current then
+        if current.frame_number == current.conversation_start_frame then
+            subtree_conversations:set_text(string.format('Conversation: start %s', INSTRUCTIONS[current.instruction]))
+        else
+            subtree_conversations:set_text(string.format('Conversation: start at %s (frame %s) - current: %s', INSTRUCTIONS[current.conversation_start.instruction], current.conversation_start_frame, INSTRUCTIONS[current.instruction]))
+        end
+        if current.selected_file then
+            subtree_conversations:append_text(string.format(' - file: %s', FILE_IDENTIFIERS[current.selected_file] or 0x00))
+        end
+    end
 
     --print(string.format('frame: %s - buffer len: %s , bytes dissected: %s', pinfo.number, gsm_sim.tvb:len(), offset))
 

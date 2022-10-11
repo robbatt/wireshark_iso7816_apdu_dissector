@@ -19,6 +19,9 @@ function p.dissector(buffer, pinfo, tree)
     local le_f = buffer:range(4,1)
     local le = le_f:uint()
     local data_f = buffer:range(5,le)
+    --local sw_f = buffer:range(5 + le, 2)
+    --local sw1 = sw_f:range(0, 1):uint() -- status 61: response ready, 90: normal end
+    --local sw2 = sw_f:range(1, 1):uint() -- expected response length
     local offset = 0
     offset = offset + 5 + le
 
@@ -39,8 +42,9 @@ function p.dissector(buffer, pinfo, tree)
 
     -- update selected file in conversation item
     if not pinfo.visited then
-        get_current_conversation(pinfo).selected_file = selected_file
-        print(string.format('frame: %s - SELECT - updating selected_file in current conversation', pinfo.number))
+        local current = APDU_Conversation:new(buffer, pinfo)
+        current.selected_file = selected_file
+        set_current_conversation(pinfo, current)
     end
 
     return offset -- processed bytes
