@@ -3,31 +3,29 @@ if not _G['iso7816_apdu'] then
     return
 end
 
-local READ_RECORD_MODE_CODES = {
+local UPDATE_RECORD_MODE_CODES = {
     NEXT_RECORD = 0x2,
     PREVIOUS_RECORD = 0x3,
     ABSOLUTE = 0x4,
 }
-local READ_RECORD_MODES = {
+local UPDATE_READ_RECORD_MODES = {
     [0x2] = 'NEXT RECORD',
     [0x3] = 'PREVIOUS RECORD',
     [0x4] = 'ABSOLUTE',
 }
 
-local p = Proto.new("iso7816.apdu.instructions.READ_RECORD", "READ_RECORD")
+local p = Proto.new("iso7816.apdu.instructions.UPDATE_RECORD", "UPDATE_RECORD")
 local pf = {
-    record_nr = ProtoField.uint8(p.name .. ".read_record.nr", "Record Number", base.DEC),
-    record_sfi = ProtoField.uint8(p.name .. ".read_record.sfi", "Record Address (SFI)", base.HEX, SFI_FILE_IDENTIFIERS, 0xf8),
-    record_mode = ProtoField.uint8(p.name .. ".read_record.mode", "Read Mode", base.HEX, READ_RECORD_MODES, 0x07),
-    read_record_length = ProtoField.uint8(p.name .. ".read_record.length", "Read length", base.DEC),
+    record_nr = ProtoField.uint8(p.name .. ".update_record.nr", "Record Number", base.DEC),
+    record_sfi = ProtoField.uint8(p.name .. ".update_record.sfi", "Record Address (SFI)", base.HEX, SFI_FILE_IDENTIFIERS, 0xf8),
+    record_mode = ProtoField.uint8(p.name .. ".update_record.mode", "Read Mode", base.HEX, UPDATE_READ_RECORD_MODES, 0x07),
+    read_record_length = ProtoField.uint8(p.name .. ".update_record.length", "Read length", base.DEC),
 
-    selected_file = ProtoField.string(p.name .. ".read_record.file", "Selected file"),
-    data = ProtoField.bytes(p.name .. ".read_record.data", "Data"),
-    no_parser = ProtoField.string(p.name .. ".read_record.no_parser", "No parser"),
+    selected_file = ProtoField.string(p.name .. ".update_record.file", "Selected file"),
+    data = ProtoField.bytes(p.name .. ".update_record.data", "Data"),
+    no_parser = ProtoField.string(p.name .. ".update_record.no_parser", "No parser"),
 }
 p.fields = pf
-
-iso7816_gsm_sim_record_nr_f = Field.new('gsm_sim.record_nr')
 
 function p.dissector(buffer, pinfo, tree)
     --local buffer = gsm_sim.tvb(1,4)
@@ -40,11 +38,11 @@ function p.dissector(buffer, pinfo, tree)
     local le = le_f:uint()
     local data_f = buffer:range(5, le)
     offset = offset + 5
-    local record_nr = p1_f:uint() --  f_val(iso7816_gsm_sim_record_nr_f)
+    local record_nr = p1_f:uint()
     local record_sfi = p2_f:bitfield(0, 5)
     local record_mode = p2_f:bitfield(5, 3)
 
-    local is_absolute = record_mode == READ_RECORD_MODE_CODES.ABSOLUTE
+    local is_absolute = record_mode == UPDATE_RECORD_MODE_CODES.ABSOLUTE
     local is_absolute_current = is_absolute and record_sfi == 0x00
 
     local selected_file
@@ -75,9 +73,9 @@ function p.dissector(buffer, pinfo, tree)
         selected_file_string = string.format('Currently selected EF - %s (0x%04x)', FILE_IDENTIFIERS[selected_file], selected_file or 0)
     elseif is_absolute then
         selected_file_string = string.format('0x%04x - %s', record_sfi or 0x00, SFI_FILE_IDENTIFIERS[record_sfi])
-    elseif record_mode == READ_RECORD_MODE_CODES.NEXT_RECORD then
+    elseif record_mode == UPDATE_RECORD_MODE_CODES.NEXT_RECORD then
         selected_file_string = string.format('Next record (not implemented)')
-    elseif record_mode == READ_RECORD_MODE_CODES.PREVIOUS_RECORD then
+    elseif record_mode == UPDATE_RECORD_MODE_CODES.PREVIOUS_RECORD then
         selected_file_string = string.format('Previous record (not implemented)')
     end
 

@@ -18,6 +18,7 @@ INSTRUCTIONS_CODE = {
     READ_BINARY = 0xb0,
     READ_RECORD = 0xb2,
     UPDATE_BINARY = 0xd6,
+    UPDATE_RECORD = 0xdc,
 }
 
 INSTRUCTIONS = {
@@ -81,7 +82,7 @@ dt_commands:add(INSTRUCTIONS_CODE.GET_RESPONSE, require('apdu_sub_dissectors/com
 dt_commands:add(INSTRUCTIONS_CODE.READ_BINARY, require('apdu_sub_dissectors/commands/READ_BINARY'))
 dt_commands:add(INSTRUCTIONS_CODE.READ_RECORD, require('apdu_sub_dissectors/commands/READ_RECORD'))
 dt_commands:add(INSTRUCTIONS_CODE.UPDATE_BINARY, require('apdu_sub_dissectors/commands/UPDATE_BINARY'))
---dt_commands:add(INSTRUCTIONS_CODE.UPDATE_RECORD, require('apdu_sub_dissectors/commands/UPDATE_RECORD'))
+dt_commands:add(INSTRUCTIONS_CODE.UPDATE_RECORD, require('apdu_sub_dissectors/commands/UPDATE_RECORD'))
 
 function p.dissector(buffer, pinfo, tree)
 
