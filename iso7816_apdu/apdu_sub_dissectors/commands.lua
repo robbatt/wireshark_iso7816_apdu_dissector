@@ -61,6 +61,7 @@ INSTRUCTIONS = {
 
 local p = Proto.new("iso7816.apdu.commands", "ISO7816-APDU commands")
 local pf = {
+    command = ProtoField.string(p.name .. ".command", "Command"),
     cla_coding = ProtoField.uint8(p.name .. ".cla.coding", "Class Coding",base.HEX, CLA_CODING, 0xf0),
     cla_secure_messaging_ind = ProtoField.uint8(p.name .. ".cla.secure_messaging_ind", "Secure Messaging Indication",base.HEX, SECURE_MESSAGING_INDICATOR, 0x0C),
     cla_log_chan = ProtoField.uint8(p.name .. ".cla.log_chan", "Logical Channel number",base.DEC, nil, 0x03),
@@ -80,6 +81,7 @@ dt_commands:add(INSTRUCTIONS_CODE.GET_RESPONSE, require('apdu_sub_dissectors/com
 dt_commands:add(INSTRUCTIONS_CODE.READ_BINARY, require('apdu_sub_dissectors/commands/READ_BINARY'))
 dt_commands:add(INSTRUCTIONS_CODE.READ_RECORD, require('apdu_sub_dissectors/commands/READ_RECORD'))
 dt_commands:add(INSTRUCTIONS_CODE.UPDATE_BINARY, require('apdu_sub_dissectors/commands/UPDATE_BINARY'))
+--dt_commands:add(INSTRUCTIONS_CODE.UPDATE_RECORD, require('apdu_sub_dissectors/commands/UPDATE_RECORD'))
 
 function p.dissector(buffer, pinfo, tree)
 
@@ -94,10 +96,11 @@ function p.dissector(buffer, pinfo, tree)
     offset = offset + 5
 
     local ins = ins_f:uint()
-    tree:add(pf.cla_coding, cla_f)
-    tree:add(pf.cla_secure_messaging_ind, cla_f)
-    tree:add(pf.cla_log_chan, cla_f)
-    tree:add(pf.instruction, ins_f, string.format('%s (0x%2x)', INSTRUCTIONS[ins], ins))
+    local command_tree = tree:add(pf.command, buffer:range(0,5), string.format('%s (0x%2x)', INSTRUCTIONS[ins], ins))
+    command_tree:add(pf.cla_coding, cla_f)
+    command_tree:add(pf.cla_secure_messaging_ind, cla_f)
+    command_tree:add(pf.cla_log_chan, cla_f)
+    command_tree:add(pf.instruction, ins_f, string.format('%s (0x%2x)', INSTRUCTIONS[ins], ins))
 
 
     local command_dissector = dt_commands:get_dissector(ins)
@@ -105,9 +108,9 @@ function p.dissector(buffer, pinfo, tree)
         pinfo.cols.protocol:append(' - APDU')
         offset = offset + command_dissector:call(buffer, pinfo, tree)
     else
-        tree:add(pf.p1, p1_f)
-        tree:add(pf.p2, p2_f)
-        tree:add(pf.le, le_f)
+        command_tree:add(pf.p1, p1_f)
+        command_tree:add(pf.p2, p2_f)
+        command_tree:add(pf.le, le_f)
         tree:add(pf.data, data_f)
         tree:add(pf.no_dissector, data_f, string.format('%s (0x%2x)', INSTRUCTIONS[ins], ins))
         print(string.format('frame: %s - No command dissector found for instruction: (0x%02x) - %s', pinfo.number, ins, INSTRUCTIONS[ins]))
