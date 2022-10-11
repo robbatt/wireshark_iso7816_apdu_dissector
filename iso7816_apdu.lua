@@ -12,9 +12,8 @@ require('util')
 require('model/APDU_Conversation')
 require('conversations')
 require('bit_operations')
-require('file_parsers')
+require('parsers')
 
-_G.conversations = {}
 
 -- Step 1 - document as you go. See header above and set_plugin_info().
 local iso7816_adpu_info = {

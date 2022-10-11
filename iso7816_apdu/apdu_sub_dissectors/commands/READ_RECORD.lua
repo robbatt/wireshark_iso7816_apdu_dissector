@@ -14,9 +14,6 @@ READ_RECORD_MODES = {
     [0x4] = 'ABSOLUTE',
 }
 
-local dt_parsers = DissectorTable.new('iso7816.apdu.record_parsers', 'ISO7816-APDU record parsers', ftypes.UINT8, base.HEX, p)
---dt_parsers:add(0x2fe2, require('apdu_sub_dissectors/record_parsers/iccid'))
-
 local p = Proto.new("iso7816.apdu.instructions.READ_RECORD", "READ_RECORD")
 local pf = {
     record_nr = ProtoField.uint8(p.name .. ".read_record.nr", "Record Number", base.DEC),
@@ -50,13 +47,28 @@ function p.dissector(buffer, pinfo, tree)
     local is_absolute = record_mode == READ_RECORD_MODE_CODES.ABSOLUTE
     local is_absolute_current = is_absolute and record_sfi == 0x00
 
-    local selected_file = SFI_FILE_IDENTIFIERS[record_sfi]
-    local previous = get_previous_conversation(pinfo)
+    local selected_file
+    if is_absolute_current  then
+    --if is_absolute_current and not pinfo.visited then
+        -- get file from conversation
+        -- this is a follow up to a GET_RESPONSE
+        local previous = find_previous_conversation(pinfo, INSTRUCTIONS_CODE.GET_RESPONSE)
+        print(string.format('frame: %s - CONVERSATIONS - READ_RECORD ## record nr: %s, le: %s, expect le: %s', pinfo.number, record_nr, le, previous.expect_read_record_length))
 
-    tree:add(pf.record_nr, p1_f)
-    tree:add(pf.record_sfi, p2_f)
-    tree:add(pf.record_mode, p2_f)
-    tree:add(pf.read_record_length, le_f)
+        if previous
+                --and record_nr == previous.next_record_nr
+                and le == previous.expect_read_record_length
+                --and record_nr < previous.expect_read_records_total
+        then
+            local current = previous:create_successor(buffer, pinfo)
+            current.selected_record_nr = record_nr
+            selected_file = current.selected_file
+            set_current_conversation(pinfo, current)
+            print(string.format('frame: %s - CONVERSATIONS - READ_RECORD in frame: %s , following %s in startframe: %s, selected file: %s', pinfo.number, current.frame_number, INSTRUCTIONS[current.conversation_start.instruction], current.conversation_start_frame, FILE_IDENTIFIERS[current.selected_file]))
+        end
+    elseif is_absolute then
+        selected_file = SFI_FILE_MAPPING[record_sfi]
+    end
 
     local selected_file_string
     if is_absolute_current then
@@ -70,14 +82,18 @@ function p.dissector(buffer, pinfo, tree)
         selected_file_string = string.format('Previous record (not implemented)')
     end
 
+    tree:add(pf.record_nr, p1_f)
+    tree:add(pf.record_sfi, p2_f)
+    tree:add(pf.record_mode, p2_f)
+    tree:add(pf.read_record_length, le_f)
     tree:add(pf.selected_file, data_f, selected_file_string)
     tree:add(pf.data, data_f)
 
-    local processed_bytes = dissect_file_content(data_f, pinfo, tree, p, dt_parsers, selected_file)
+    local processed_bytes = dissect_file_content(data_f, pinfo, tree, p, dt_record_parsers, selected_file)
     offset = offset + processed_bytes
 
     if processed_bytes == 0 then
-        tree:add(pf.no_parser, data_f, string.format('No record content parser found for file: 0x%02x - %s', record_sfi, SFI_FILE_IDENTIFIERS[record_sfi]))
+        tree:add(pf.no_parser, data_f, string.format('No record content parser found for file: 0x%02x - %s', selected_file, FILE_IDENTIFIERS[selected_file]))
     end
 
     return offset -- processed bytes

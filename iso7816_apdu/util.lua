@@ -25,12 +25,12 @@ function dissect_file_content(buffer, pinfo, tree, protocol, dissector_table, fi
     if not file_id then
         return 0
     end
-    local file_parser = dissector_table:get_dissector(file_id)
-    if file_parser then
-        --print(string.format('frame: %s - found a file parser for file: 0x%02x - %s - in dissector: %s', pinfo.number, file_id, FILE_IDENTIFIERS[file_id], protocol.name))
-        return file_parser:call(buffer():tvb(), pinfo, tree)
+    local parser = dissector_table:get_dissector(file_id)
+    if parser then
+        --print(string.format('frame: %s - found a file/record parser for file: 0x%02x - %s - in dissector: %s', pinfo.number, file_id, FILE_IDENTIFIERS[file_id], protocol.name))
+        return parser:call(buffer():tvb(), pinfo, tree)
     else
-        print(string.format('frame: %s - No file parser found for file: 0x%02x - %s - in dissector: %s', pinfo.number, file_id, FILE_IDENTIFIERS[file_id], protocol.name))
+        print(string.format('frame: %s - No file/record parser found for file: 0x%02x - %s - in dissector: %s', pinfo.number, file_id, FILE_IDENTIFIERS[file_id], protocol.name))
         return 0
     end
 end
@@ -54,4 +54,13 @@ function deepcopy(o, seen)
         no[k] = v
     end
     return no
+end
+
+function table.safe_get(table, key, default)
+    for k, v in pairs(table) do
+        if k == key then
+            return v
+        end
+    end
+    return default
 end

@@ -66,7 +66,7 @@ function p.dissector(buffer, pinfo, tree)
     tree:add(pf.selected_file, data_f, string.format('0x%04x - %s', selected_file, FILE_IDENTIFIERS[selected_file]))
     tree:add(pf.data, data_f)
 
-    local processed_bytes = dissect_file_content(data_f, pinfo, tree, p, dt_parsers, selected_file)
+    local processed_bytes = dissect_file_content(data_f, pinfo, tree, p, dt_file_parsers, selected_file)
     offset = offset + processed_bytes
 
     if processed_bytes == 0 then

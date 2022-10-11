@@ -270,6 +270,7 @@ SFI_FILE_MAPPING = {
     [0x18] = 0x6FE4,  -- EPS NAS Security Context
 }
 SFI_FILE_IDENTIFIERS = {
+    [0x00] = 'Current',
     [0x01] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x01]],  -- Emergency call codes
     [0x02] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x02]],  -- Language indication
     [0x03] = FILE_IDENTIFIERS[SFI_FILE_MAPPING[0x03]],  -- Administrative data
