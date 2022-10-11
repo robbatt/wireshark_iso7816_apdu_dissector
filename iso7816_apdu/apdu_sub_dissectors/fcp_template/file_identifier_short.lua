@@ -5,7 +5,8 @@ if not _G['iso7816_apdu'] then return end
 local p = Proto.new("iso7816.apdu.short_file_identifier", "Short File Identifier (SFI)")
 local pf = {
     section = ProtoField.string(p.name .. ".section", "Section"),
-    sfi = ProtoField.uint8(p.name .. ".sfi", "Short File identifier (SFI)", base.HEX, FILE_IDENTIFIERS),
+    sfi = ProtoField.uint8(p.name .. ".sfi", "Short File identifier (SFI)", base.HEX, FILE_IDENTIFIERS, 0xf8),
+    unused = ProtoField.uint8(p.name .. ".unused", "Unused", base.HEX, nil, 0x07),
 }
 p.fields = pf
 
@@ -28,9 +29,8 @@ function p.dissector(buffer, pinfo, tree)
     else
         subtree:add(pf.section, buffer(0, 2), string.format('Tag: 0x%2x, Content: %s byte(s)', buffer(0, 1):uint(), buffer(1, 1):uint()))
         subtree:add(pf.sfi, buffer(2, 1))
+        subtree:add(pf.unused, buffer(2, 1))
         return 3 -- processed bytes
-
-        --TODO If the length of the TLV is 1, the SFI value is indicated in the 5 most significant bits (bits b8 to b4) of the TLV value field. In this case, bits b3 to b1 shall be set to 0.
         --NOTE:
         --If the SFI value is identical to the 5 least significant bits of the file identifier then it is implementation
         --dependent if the TLV is not present or if the SFI value is indicated in the TLV.
