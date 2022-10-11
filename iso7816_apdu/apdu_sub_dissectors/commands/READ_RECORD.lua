@@ -72,8 +72,7 @@ function p.dissector(buffer, pinfo, tree)
 
     local selected_file_string
     if is_absolute_current then
-        --TODO implement READ_RECORD, get file from previous conversation items
-        selected_file_string = string.format('Currently selected EF (not implemented)')
+        selected_file_string = string.format('Currently selected EF - %s (0x%04x)', FILE_IDENTIFIERS[selected_file], selected_file or 0)
     elseif is_absolute then
         selected_file_string = string.format('0x%04x - %s', record_sfi or 0x00, SFI_FILE_IDENTIFIERS[record_sfi])
     elseif record_mode == READ_RECORD_MODE_CODES.NEXT_RECORD then
